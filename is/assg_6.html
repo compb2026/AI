@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Diffie-Hellman Key Exchange</title>
+</head>
+<body>
+    <h2>Diffie-Hellman Key Exchange</h2>
+
+    <label>Enter your private key (Alice): </label>
+    <input type="number" id="alicePrivate" />
+    <button onclick="exchangeKeys()">Generate Shared Key</button>
+
+    <p id="output"></p>
+
+    <script>
+        function modExp(base, exp, mod) {
+            let result = 1;
+            base = base % mod;
+            while (exp > 0) {
+                if (exp % 2 === 1)
+                    result = (result * base) % mod;
+                exp = Math.floor(exp / 2);
+                base = (base * base) % mod;
+            }
+            return result;
+        }
+
+        function exchangeKeys() {
+            const p = 23; // A small prime
+            const g = 5;  // Primitive root modulo 23
+
+            const a = parseInt(document.getElementById("alicePrivate").value);
+            const A = modExp(g, a, p); // Alice's public key
+
+            const b = Math.floor(Math.random() * 10) + 1; // Bob's private key
+            const B = modExp(g, b, p); // Bob's public key
+
+            const sharedKeyAlice = modExp(B, a, p);
+            const sharedKeyBob = modExp(A, b, p);
+
+            document.getElementById("output").innerHTML =
+                `<b>Public Values:</b><br>p = ${p}, g = ${g}<br><br>` +
+                `<b>Alice's Private Key:</b> ${a}<br>` +
+                `<b>Alice's Public Key (A):</b> ${A}<br><br>` +
+                `<b>Bob's Private Key:</b> ${b}<br>` +
+                `<b>Bob's Public Key (B):</b> ${B}<br><br>` +
+                `<b>Shared Secret (Alice):</b> ${sharedKeyAlice}<br>` +
+                `<b>Shared Secret (Bob):</b> ${sharedKeyBob}`;
+        }
+    </script>
+</body>
+</html>
